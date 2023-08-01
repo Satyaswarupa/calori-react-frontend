@@ -1,10 +1,10 @@
 import React from "react";
 
-const TodoItem = ({
+const Activity = ({
   date,
   name,
-  foodName,
-  calorie,
+  activity,
+  calorieBurned,
   isCompleted,
   updateHandler,
   deleteHandler,
@@ -17,12 +17,12 @@ const TodoItem = ({
         <p>{date}</p>
         <h4>Name:</h4>
         <p>{name}</p>
-        <h4>FoodName:</h4>
-        <p>{foodName}</p>
-        <h4>Calorie:</h4>
-        <p>{calorie}</p>
+        <h4>Activity:</h4>
+        <p>{activity}</p>
+        <h4>CalorieBurned:</h4>
+        <p>{calorieBurned}</p>
       </div>
-      <p>Target to achived calorie: 2500</p>
+      <p>Target to achived for calorie burned: 2000</p>
       <div>
         <input
           onChange={() => updateHandler(id)}
@@ -37,4 +37,4 @@ const TodoItem = ({
   );
 };
 
-export default TodoItem;
+export default Activity;

@@ -28,10 +28,11 @@ const Header = () => {
   return (
     <nav className="header">
       <div>
-        <h2>Todo App.</h2>
+        <h2>calorie calculator</h2>
       </div>
       <article>
-        <Link to={"/"}>Home</Link>
+        <Link to={"/"}>calorie intake</Link>
+        <Link to={"/burned"}>calorie burned</Link>
         <Link to={"/profile"}>Profile</Link>
         {isAuthenticated ? (
           <button disabled={loading} onClick={logoutHandler} className="btn">

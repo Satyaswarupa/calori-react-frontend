@@ -2,32 +2,39 @@ import React, { useContext, useEffect, useState } from "react";
 import axios from "axios";
 import { Context, server } from "../main";
 import { toast } from "react-hot-toast";
-import TodoItem from "../components/TodoItem";
 import { Navigate } from "react-router-dom";
-import {
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  Button,
-} from "@mui/material"
+import { Dialog, DialogTitle, DialogContent, DialogActions, Button } from "@mui/material";
+import Activity from "../components/Activity";
 
-
-const Home = () => {
+const Burned = () => {
   const [date, setDate] = useState("");
   const [name, setName] = useState("");
-  const [foodName, setFoodName] = useState("");
-  const [calorie, setCalorie] = useState("");
+  const [activity, setActivity] = useState("");
+  const [calorieBurned, setCalorieBurned] = useState("");
   const [loading, setLoading] = useState(false);
-  const [tasks, setTasks] = useState([]);
+  const [activities, setActivities] = useState([]);
   const [refresh, setRefresh] = useState(false);
 
   const { isAuthenticated } = useContext(Context);
 
+  // Fetch activities from the server
+  useEffect(() => {
+    axios
+      .get(`${server}/activity/my`, {
+        withCredentials: true,
+      })
+      .then((res) => {
+        setActivities(res.data.activity);
+      })
+      .catch((e) => {
+        toast.error(e.response.data.message);
+      });
+  }, [refresh]);
+
   const updateHandler = async (id) => {
     try {
       const { data } = await axios.put(
-        `${server}/task/${id}`,
+        `${server}/activity/${id}`,
         {},
         {
           withCredentials: true,
@@ -43,7 +50,7 @@ const Home = () => {
 
   const deleteHandler = async (id) => {
     try {
-      const { data } = await axios.delete(`${server}/task/${id}`, {
+      const { data } = await axios.delete(`${server}/activity/${id}`, {
         withCredentials: true,
       });
 
@@ -59,12 +66,12 @@ const Home = () => {
     try {
       setLoading(true);
       const { data } = await axios.post(
-        `${server}/task/new`,
+        `${server}/activity/new`,
         {
           date,
           name,
-          foodName,
-          calorie,
+          activity,
+          calorieBurned,
         },
         {
           withCredentials: true,
@@ -76,8 +83,8 @@ const Home = () => {
 
       setDate("");
       setName("");
-      setFoodName("");
-      setCalorie("");
+      setActivity("");
+      setCalorieBurned("");
       toast.success(data.message);
       setLoading(false);
       setRefresh((prev) => !prev);
@@ -87,42 +94,28 @@ const Home = () => {
     }
   };
 
-  useEffect(() => {
-    axios
-      .get(`${server}/task/my`, {
-        withCredentials: true,
-      })
-      .then((res) => {
-        setTasks(res.data.tasks);
-      })
-      .catch((e) => {
-        toast.error(e.response.data.message);
-      });
-  }, [refresh]);
-
   if (!isAuthenticated) return <Navigate to={"/login"} />;
 
-  const [selectedFood, setSelectedFood] = useState(null);
+  const [selectedActivity, setSelectedActivity] = useState(null);
   const [open, setOpen] = useState(false);
 
-  const foodCalories = {
-    Roti: 297,
-    Rice: 130,
-    Chicken: 239,
-    Apple: 52,
-    Banana: 89,
-    Dal: 90,
-    Egg: 155,
+  const activityCalories = {
+    walking: 115,
+    Running: 100,
+    swimming: 200,
+    yoga: 230,
+    pushup: 42,
+    skipping: 250,
   };
 
-  const handleFoodClick = (food) => {
-    setSelectedFood(food);
+  const handleActivityClick = (activity) => {
+    setSelectedActivity(activity);
     setOpen(true);
   };
 
-  const handleFoodSelect = (food) => {
-    setFoodName(food);
-    setCalorie(foodCalories[food]);
+  const handleActivitySelect = (activity) => {
+    setActivity(activity);
+    setCalorieBurned(activityCalories[activity]);
     setOpen(false);
   };
 
@@ -134,12 +127,12 @@ const Home = () => {
     <div className="container">
       <div className="login">
         <Dialog open={open} onClose={handleClose}>
-          <DialogTitle>Select Food</DialogTitle>
+          <DialogTitle>Select Activity</DialogTitle>
           <DialogContent>
             <ul>
-              {Object.keys(foodCalories).map((food) => (
-                <li key={food} onClick={() => handleFoodSelect(food)}>
-                  {food}
+              {Object.keys(activityCalories).map((activity) => (
+                <li key={activity} onClick={() => handleActivitySelect(activity)}>
+                  {activity}
                 </li>
               ))}
             </ul>
@@ -170,19 +163,19 @@ const Home = () => {
 
             <input
               type="text"
-              placeholder="Food Name"
+              placeholder="Activity Name"
               required
-              value={foodName}
+              value={activity || ""}
               onClick={() => setOpen(true)}
               readOnly
             />
 
             <input
               type="number"
-              placeholder="Calorie"
+              placeholder="CalorieBurned"
               required
-              value={calorie}
-              onChange={(e) => setCalorie(e.target.value)}
+              value={calorieBurned}
+              onChange={(e) => setCalorieBurned(e.target.value)}
             />
 
             <button disabled={loading} type="submit">
@@ -193,22 +186,24 @@ const Home = () => {
       </div>
 
       <section className="todosContainer">
-        {tasks.map((i) => (
-          <TodoItem
-            name={i.name}
-            date={i.date}
-            foodName={i.foodName}
-            calorie={i.calorie}
-            isCompleted={i.isCompleted}
-            updateHandler={updateHandler}
-            deleteHandler={deleteHandler}
-            id={i._id}
-            key={i._id}
-          />
-        ))}
-      </section>
+      {activities && activities.map((activity) => (
+        <Activity
+          name={activity.name}
+          date={activity.date}
+          activity={activity.activity}
+          calorieBurned={activity.calorieBurned}
+          isCompleted={activity.isCompleted}
+          updateHandler={updateHandler}
+          deleteHandler={deleteHandler}
+          id={activity._id}
+          key={activity._id}
+        />
+      ))}
+    </section>
     </div>
   );
 };
 
-export default Home;
+export default Burned;
+
+

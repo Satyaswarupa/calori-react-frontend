@@ -3,3 +3,28 @@
     padding: 0;
   }
 }
+
+@media only screen and (max-width: 767px) {
+  .header {
+    /* Phone-specific styles here */
+    padding: 0 1rem; /* Reduce the padding for phone screens */
+    justify-content: center; /* Center the content on phone screens */
+  }
+
+  /* Modify styles for h2 on phone screens */
+  .header > div h2 {
+    font-size: 1.2rem;
+    /* Add more modifications here as needed */
+  }
+
+  /* Modify styles for article on phone screens */
+  .header > article {
+    flex-direction: row;
+    /* Add more modifications here as needed */
+  }
+
+  .header > article > a {
+    margin-top: 1rem;
+    /* Add more modifications here as needed */
+  }
+}
